@@ -1,21 +1,20 @@
-from fastapi import APIRouter, HTTPException, Depends
-from app.schemas.user_schema import UserCreate, UserResponse
-from app.crud.user_crud import create_user, get_user_by_email
-from app.core.security import verify_password
-
-router = APIRouter()
+from fastapi import APIRouter, HTTPException, status
+from app.schemas.user_schema import UserCreate, UserLogin, UserResponse
+from app.crud.user_crud import create_user, authenticate_user
+from app.utils.helpers import create_access_token
+router=APIRouter()
 
 @router.post("/register", response_model=UserResponse)
-async def register_user(user: UserCreate):
-    existing_user = await get_user_by_email(user.email)
+async def register(user: UserCreate):
+    existing_user = await create_user(user.username, user.email, user.password)
     if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered.")
-    created_user = await create_user(user.username, user.email, user.password)
-    return created_user
+        raise HTTPException(status_code=400, detail="User already exists")
+    return existing_user
 
 @router.post("/login")
-async def login_user(email: str, password: str):
-    user = await get_user_by_email(email)
-    if not user or not verify_password(password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid credentials.")
-    return {"message": "Login successful"}
+async def login(user: UserLogin):
+    authenticated_user = await authenticate_user(user.email, user.password)
+    if not authenticated_user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = create_access_token({"sub": authenticated_user.email})
+    return {"access_token": token, "token_type": "bearer"}

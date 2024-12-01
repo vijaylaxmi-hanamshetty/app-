@@ -11,6 +11,7 @@ async def startup_event():
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(product.router, prefix="/products", tags=["Products"])
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the E-commerce API"}

@@ -1,31 +1,26 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
-
-class ProductCreate(BaseModel):
-    name: str
+class ProductBase(BaseModel):
+    name: str = Field(..., max_length=255)
     description: Optional[str] = None
     price: float
     stock: int
-    is_active: bool = True
+
+class ProductCreate(ProductBase):
+    pass
 
 class ProductUpdate(BaseModel):
-    name: Optional[str] = None
+    name: Optional[str] = Field(None, max_length=255)
     description: Optional[str] = None
     price: Optional[float] = None
     stock: Optional[int] = None
-    is_active: Optional[bool] = None
 
-class ProductResponse(BaseModel):
+class ProductOut(ProductBase):
     id: int
-    name: str
-    description: Optional[str]
-    price: float
-    stock: int
-    is_active: bool
-    created_at:datetime
-    updated_at:datetime
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
