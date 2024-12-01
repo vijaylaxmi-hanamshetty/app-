@@ -1,19 +1,16 @@
-
-from tortoise import fields
 from tortoise.models import Model
-from app.models.product_model import Product  
+from tortoise import fields
+
 class Cart(Model):
     id = fields.IntField(pk=True)
-    user = fields.ForeignKeyField("models.User", related_name="cart")
-    created_at = fields.DatetimeField(auto_now_add=True)
+    user_id = fields.IntField()
+    items = fields.ReverseRelation["CartItem"]
 
 class CartItem(Model):
     id = fields.IntField(pk=True)
     cart = fields.ForeignKeyField("models.Cart", related_name="items")
-    product = fields.ForeignKeyField("models.Product", related_name="cart_items")
-    quantity = fields.IntField(default=1)
-    created_at = fields.DatetimeField(auto_now_add=True)
-
-    @property
-    def total_price(self):
-        return self.product.price * self.quantity
+    product_id = fields.IntField()
+    quantity = fields.IntField()
+    total_price = fields.FloatField(default=0.0)
+def __str__(self):
+        return f"CartItem(Cart={self.cart.id}, Product={self.product.id}, Quantity={self.quantity})"
