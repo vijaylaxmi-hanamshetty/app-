@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import init_db
-from app.routers import auth,product,cart,order
+from app.routers import auth,product,cart,order,payment
 
 app = FastAPI()
 
@@ -13,6 +13,7 @@ app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(product.router, prefix="/products", tags=["Products"])
 app.include_router(cart.router,prefix="/shopping",tags=["shopping"])
 app.include_router(order.router,prefix="/odering",tags=["ordering"])
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the E-commerce API"}
